@@ -1,0 +1,41 @@
+name: Build and Deploy Docker Image
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build_and_deploy:
+    runs-on: ubuntu-latest
+
+    env:
+      # DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
+      # DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
+      DOCKER_IMAGE_NAME: "aljabernishad/basic-api"
+      # INSTANCE_IP: ${{ secrets.VM_IP }}
+      # PRIVATE_KEY: ${{ secrets.YOUR_PRIVATE_KEY }}
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v2
+
+      # - name: Login to Docker Hub
+      #   run: echo "${DOCKER_PASSWORD}" | docker login -u "${DOCKER_USERNAME}" --password-stdin
+
+      - name: Build Docker Image
+        run: docker build -t $DOCKER_IMAGE_NAME .
+
+      - name: Push Docker Image to Docker Hub
+        run: docker push $DOCKER_IMAGE_NAME
+
+      # - name: SSH into Deployment Machine
+      #   uses: appleboy/ssh-action@master
+      #   with:
+      #     host: $INSTANCE_IP
+      #     username: ec2-user
+      #     key: $PRIVATE_KEY
+      #     port: 22
+      #     script: |
+      #       docker pull $DOCKER_IMAGE_NAME
+      #       docker run -d -p 80:80 $DOCKER_IMAGE_NAME
